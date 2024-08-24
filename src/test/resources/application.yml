@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # This ensures the database schema is created on startup and dropped on shutdown
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#    show-sql: true  # Show SQL in the logs
+    properties:
+      hibernate:
+#        format_sql: true  # Format SQL output
+#        use_sql_comments: true  # Optional: Adds comments to the generated SQL
+        jdbc:
+          lob:
+#            non_contextual_creation: true
+  sql:
+    init:
+      mode: always  # Always initialize the database, even in a production profile
