@@ -3,6 +3,9 @@ package com.example.cricflow.model;
 import com.example.cricflow.model.literal.ExcludedFromToString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.lang.reflect.Field;
@@ -12,7 +15,7 @@ import static com.example.cricflow.model.literal.StringGenerator.generateObjectS
 
 //@Data
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Builder
 @Getter
 @Setter
@@ -29,29 +32,39 @@ public class Player {
     private Long playerId;
 
     @Column
+    @NotNull(message = "firstName can not be null")
+    @Size(min = 2, max = 20, message = "firstName must be 2-20 characters long")
     private String firstName;
 
     @Column
+    @NotNull(message = "lastName can not be null")
+    @Size(min = 2, max = 20, message = "lastName must be 2-20 characters long")
     private String lastName;
 
     @Column
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "playerType can not be null")
     private PlayerType playerType;
 
     @Column
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "battingStyle can not be null")
     private BattingStyle battingStyle;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "bowlingStyle can not be null")
+    private BowlingStyle bowlingStyle;
 
-    @ManyToMany(
+
+    @ManyToOne(
             targetEntity = Team.class,
-            mappedBy = "players",
             fetch = FetchType.EAGER
     )
     @JsonIgnore
     @ExcludedFromToString
-    @Setter(AccessLevel.NONE)
-    List<Team> teams;
+    @JoinColumn(name = "team_id")
+    Team team;
 
     static public enum PlayerType {
         BATSMAN,
@@ -62,6 +75,15 @@ public class Player {
     static public enum BattingStyle {
         LEFT_HANDED,
         RIGHT_HANDED
+    }
+
+    static public enum BowlingStyle {
+        LEFT_ARM_FAST_BOWLER,
+        RIGHT_ARM_FAST_BOWLER,
+        LEFT_ARM_OFF_SPINNER,
+        RIGHT_ARM_OFF_SPINNER,
+        LEFT_ARM_CHINA_MAN,
+        RIGHT_ARM_LEG_SPINNER,
     }
 
     @Override
@@ -80,6 +102,4 @@ public class Player {
                 && playerType == other.playerType
                 && battingStyle == other.battingStyle;
     }
-
-
 }

@@ -1,12 +1,11 @@
 package com.example.cricflow.service;
 
 import com.example.cricflow.BaseData;
-import com.example.cricflow.exception.CascadeFailureException;
+import com.example.cricflow.exception.EntityDoesNotExistsException;
+import com.example.cricflow.exception.validator.PlayerFieldsException;
 import com.example.cricflow.model.Player;
-import com.example.cricflow.model.Team;
 import com.example.cricflow.repository.PlayerRepo;
 import com.example.cricflow.repository.TeamRepo;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,12 +19,12 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,188 +45,122 @@ public class PlayerServiceTests extends BaseData {
         prepare();
     }
 
-//    @DisplayName("Service Test for adding a player with No Team")
-//    @Test
-//    public void givenPlayerWithNoTeam_whenSaved_thenPlayerObjectIsReturned() {
-//        //given
-//        given(playerRepo.save(player1)).willReturn(player1);
-//        given(playerRepo.save(player1)).willReturn(player1);
-//
-//        //when
-//        ResponseEntity<Player> savedPlayer = playerService.createPlayer(player1);
-//
-//        //then
-//        assertThat(savedPlayer.getBody()).isEqualTo(player1);
-//        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//    }
-//
-//    @DisplayName("Service Test for adding a player with a Team, not saved already provided cascade true")
-//    @Test
-//    public void givenPlayerObjectWithTeamNotSavedAlreadyAndCascadePermission_whenSaved_thenTeamsAreSavedPlayerObjectIsReturned() {
-//        //given
-//        player1.setTeams(new ArrayList<>(Arrays.asList(teamA, teamB))); // to check creation of teams with player
-//        given(teamRepo.save(teamA)).willReturn(teamA);
-//        given(teamRepo.save(teamB)).willReturn(teamB);
-//        given(playerRepo.save(player1)).willReturn(player1);
-//
-//        //when
-//        ResponseEntity<Player> savedPlayer = playerService.createPlayer(player1, true);
-//
-//        //then
-//        assertThat(savedPlayer.getBody()).isEqualTo(player1);
-//        assertThat(savedPlayer.getBody().getTeams().get(0)).isEqualTo(player1.getTeams().get(0));
-//        assertThat(savedPlayer.getBody().getTeams().get(1)).isEqualTo(player1.getTeams().get(1));
-//        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//    }
-//
-//    @DisplayName("Service Test for adding a player with a Team, not saved already, and provided cascade false")
-//    @Test
-//    public void givenPlayerObjectWithTeamNotSavedAlreadyAndWithoutCascadePermission_whenSaved_thenCascadeFailureExceptionIsThrown() {
-//        //given
-//        player1.setTeams(new ArrayList<>(Arrays.asList(teamA, teamB))); // to check creation of teams with player
-//        given(teamRepo.findById(anyLong()))
-//                .willReturn(Optional.empty());
-//
-//        //when
-//        Executable executable = () -> playerService.createPlayer(player1, false);
-//
-//        //then
-//        assertThrows(CascadeFailureException.class, executable);
-//    }
-//
-//    @DisplayName("Service Test for adding a player with a Team, saved already provided cascade false")
-//    @Test
-//    public void givenPlayerObjectWithTeamSavedAlreadyAndCascadePermission_whenSaved_thenPlayerObjectIsReturned() {
-//        //given
-//        player1.setTeams(new ArrayList<>(Arrays.asList(teamA, teamB))); // to check creation of teams with player
-//        given(teamRepo.findById(anyLong())).willReturn(Optional.of(new Team()));
-//        given(teamRepo.save(teamA)).willReturn(teamA);
-//        given(teamRepo.save(teamB)).willReturn(teamB);
-//        given(playerRepo.save(player1)).willReturn(player1);
-//
-//        //when
-//        ResponseEntity<Player> savedPlayer = playerService.createPlayer(player1, false);
-//
-//        //then
-//        assertThat(savedPlayer.getBody()).isEqualTo(player1);
-//        assertThat(savedPlayer.getBody().getTeams().get(0)).isEqualTo(player1.getTeams().get(0));
-//        assertThat(savedPlayer.getBody().getTeams().get(1)).isEqualTo(player1.getTeams().get(1));
-//        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//    }
-//
-//    @DisplayName("Service Test for reading player with id that exists")
-//    @Test
-//    public void givenPlayerIdThatExists_whenRead_thenPlayerWithThatIdIsReturned(){
-//        //given
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.of(player1));
-//
-//        //when
-//        ResponseEntity<Player> readPlayer = playerService.readPlayer(player1.getPlayerId());
-//
-//        //then
-//        assertThat(readPlayer.getBody()).isEqualTo(player1);
-//        assertThat(readPlayer.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//    }
-//
-//    @DisplayName("Service Test for reading player with id that does not exist")
-//    @Test
-//    public void givenPlayerIdThatDoesNotExists_whenRead_thenEntityDoesNotExistsExceptionIsThrown(){
-//        //given
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.empty());
-//
-//        //when
-//        Executable executable = () -> playerService.readPlayer(player1.getPlayerId());
-//
-//        //then
-//        assertThrows(EntityNotFoundException.class, executable);
-//    }
-//
-//    @DisplayName("Service Test for updating an old player with No Team")
-//    @Test
-//    public void givenAlreadySavedPlayerWithNoTeam_whenUpdated_thenUpdatedPlayerObjectIsReturned() {
-//        //given
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.of(new Player()));
-//        given(playerRepo.save(player1)).willReturn(player1);
-//
-//        //when
-//        player1.setPlayerType(Player.PlayerType.ALL_ROUNDER);
-//        ResponseEntity<Player> savedPlayer = playerService.updatePlayer(player1);
-//
-//        //then
-//        assertThat(savedPlayer.getBody().getPlayerType()).isEqualTo(player1.getPlayerType());
-//        assertThat(savedPlayer.getBody()).isEqualTo(player1);
-//        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//    }
-//
-//    @DisplayName("Service Test for updating a new player with No Team")
-//    @Test
-//    public void givenNewPlayer_whenUpdated_thenEntityDoesNotExistsExceptionIsThrown() {
-//        //given
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.empty());
-//
-//        //when
-//        Executable executable = () -> playerService.updatePlayer(player1);
-//
-//        //then
-//        assertThrows(EntityNotFoundException.class, executable);
-//    }
-//
-//    @DisplayName("Service Test for updating an old player with a Team, not saved already provided cascade true")
-//    @Test
-//    public void givenOldPlayerObjectWithTeamNotSavedAlreadyAndCascadePermission_whenUpdated_thenTeamsAreSavedAndPlayerObjectIsReturned() {
-//        //given
-//        player1.setTeams(new ArrayList<>(Arrays.asList(teamA, teamB))); // to check creation of teams with player
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.of(new Player()));
-//        given(teamRepo.save(teamA)).willReturn(teamA);
-//        given(teamRepo.save(teamB)).willReturn(teamB);
-//        given(playerRepo.save(player1)).willReturn(player1);
-//
-//        //when
-//        ResponseEntity<Player> updatedPlayer = playerService.updatePlayer(player1, true);
-//
-//        //then
-//        assertThat(updatedPlayer.getBody()).isEqualTo(player1);
-//        assertThat(updatedPlayer.getBody().getTeams().get(0)).isEqualTo(player1.getTeams().get(0));
-//        assertThat(updatedPlayer.getBody().getTeams().get(1)).isEqualTo(player1.getTeams().get(1));
-//        assertThat(updatedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//    }
-//
-//    @DisplayName("Service Test for updating an old player with a Team, not saved already, and provided cascade false")
-//    @Test
-//    public void givenOldPlayerObjectWithTeamNotSavedAlreadyAndWithoutCascadePermission_whenUpdated_thenCascadeFailureExceptionIsThrown() {
-//        //given
-//        player1.setTeams(new ArrayList<>(Arrays.asList(teamA, teamB))); // to check creation of teams with player
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.of(new Player()));
-//        given(teamRepo.findById(anyLong())).willReturn(Optional.empty());
-//
-//        //when
-//        Executable executable = () -> playerService.updatePlayer(player1, false);
-//
-//        //then
-//        assertThrows(CascadeFailureException.class, executable);
-//    }
+    @DisplayName("Service Test for adding a player")
+    @Test
+    public void givenPlayer_whenSaved_thenPlayerObjectIsReturned() {
+        //given
+        given(playerRepo.save(player1)).willReturn(player1);
 
-//    @DisplayName("Service Test for updating an old player with a Team, saved already provided cascade false")
-//    @Test
-//    public void givenOldPlayerObjectWithTeamSavedAlreadyAndCascadePermission_whenUpdated_thenUpdatedPlayerObjectIsReturned() {
-//        //given
-//        player1.setTeams(new ArrayList<>(Arrays.asList(teamA, teamB))); // to check creation of teams with player
-//        given(playerRepo.findById(anyLong())).willReturn(Optional.of(new Player()));
-//        given(teamRepo.findById(anyLong())).willReturn(Optional.of(new Team()));
-//        given(teamRepo.save(teamA)).willReturn(teamA);
-//        given(teamRepo.save(teamB)).willReturn(teamB);
-//        given(playerRepo.save(player1)).willReturn(player1);
-//
-//        //when
-//        ResponseEntity<Player> savedPlayer = playerService.updatePlayer(player1, false);
-//
-//        //then
-//        assertThat(savedPlayer.getBody()).isEqualTo(player1);
-//        assertThat(savedPlayer.getBody().getTeams().get(0)).isEqualTo(player1.getTeams().get(0));
-//        assertThat(savedPlayer.getBody().getTeams().get(1)).isEqualTo(player1.getTeams().get(1));
-//        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//    }
+        //when
+        ResponseEntity<Player> savedPlayer = playerService.createPlayer(player1);
+
+        //then
+        assertThat(savedPlayer.getBody()).isEqualTo(player1);
+        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @DisplayName("Service Test for adding a player not meeting jakarta validations constraints")
+    @Test
+    public void givenInValidPlayer_whenSaved_thenPlayerFieldsExceptionIsThrown() {
+        //given
+        Player player = new Player();
+
+        //when
+        Executable executable = () -> playerService.createPlayer(player);
+
+        //then
+        assertThrows(PlayerFieldsException.class, executable);
+    }
+
+    @DisplayName("Service Test for adding multiple players")
+    @Test
+    public void givenMultiplePlayers_whenSaved_thenListOfPlayerObjectsIsReturned() {
+        //given
+        List<Player> players = Arrays.asList(player1, player2);
+        given(playerRepo.saveAll(players)).willReturn(Arrays.asList(player1, player2));
+
+        //when
+        ResponseEntity<List<Player>> savedPlayers = playerService.createMultiplePlayers(players);
+
+        //then
+        assertThat(savedPlayers.getBody().get(0)).isEqualTo(players.get(0));
+        assertThat(savedPlayers.getBody().get(1)).isEqualTo(players.get(1));
+        assertThat(savedPlayers.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @DisplayName("Service Test for reading player with id that exists")
+    @Test
+    public void givenPlayerIdThatExists_whenRead_thenPlayerWithThatIdIsReturned(){
+        //given
+        given(playerRepo.findById(anyLong())).willReturn(Optional.of(player1));
+
+        //when
+        ResponseEntity<Player> readPlayer = playerService.readPlayer(player1.getPlayerId());
+
+        //then
+        assertThat(readPlayer.getBody()).isEqualTo(player1);
+        assertThat(readPlayer.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    }
+
+    @DisplayName("Service Test for reading player with id that does not exist")
+    @Test
+    public void givenPlayerIdThatDoesNotExists_whenRead_thenEntityDoesNotExistsExceptionIsThrown(){
+        //given
+        given(playerRepo.findById(anyLong())).willReturn(Optional.empty());
+
+        //when
+        Executable executable = () -> playerService.readPlayer(player1.getPlayerId());
+
+        //then
+        assertThrows(EntityDoesNotExistsException.class, executable);
+    }
+
+    @DisplayName("Service Test for reading all players")
+    @Test
+    public void givenNothing_whenReadAll_thenListOfAllPlayersIsReturned(){
+        //given
+        given(playerRepo.findAll()).willReturn(Arrays.asList(player1, player2));
+
+        //when
+        ResponseEntity<List<Player>> retrievedPlayers = playerService.readAllPlayers();
+
+        //then
+        assertThat(retrievedPlayers.getBody().get(0)).isEqualTo(player1);
+        assertThat(retrievedPlayers.getBody().get(1)).isEqualTo(player2);
+        assertThat(retrievedPlayers.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("Service Test for updating an old player")
+    @Test
+    public void givenAlreadySavedPlayer_whenUpdated_thenUpdatedPlayerObjectIsReturned() {
+        //given
+        given(playerRepo.findById(anyLong())).willReturn(Optional.of(new Player()));
+        given(playerRepo.save(player1)).willReturn(player1);
+
+        //when
+        player1.setPlayerType(Player.PlayerType.ALL_ROUNDER);
+        ResponseEntity<Player> savedPlayer = playerService.updatePlayer(player1);
+
+        //then
+        assertThat(savedPlayer.getBody().getPlayerType()).isEqualTo(player1.getPlayerType());
+        assertThat(savedPlayer.getBody()).isEqualTo(player1);
+        assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @DisplayName("Service Test for updating a new player")
+    @Test
+    public void givenNewPlayer_whenUpdated_thenEntityDoesNotExistsExceptionIsThrown() {
+        //given
+        given(playerRepo.findById(anyLong())).willReturn(Optional.empty());
+
+        //when
+        Executable executable = () -> playerService.updatePlayer(player1);
+
+        //then
+        assertThrows(EntityDoesNotExistsException.class, executable);
+    }
+
 
     @DisplayName("Service Test for deleting player with id that exists")
     @Test
@@ -237,11 +170,11 @@ public class PlayerServiceTests extends BaseData {
         willDoNothing().given(playerRepo).deleteById(player1.getPlayerId());
 
         //when
-        ResponseEntity<Player> deletedPlayer = playerService.deletePlayer(player1.getPlayerId());
+        ResponseEntity<String> deletedPlayerStatus = playerService.deletePlayer(player1.getPlayerId());
 
         //then
-        assertThat(deletedPlayer.getBody()).isEqualTo((Player) null);
-        assertThat(deletedPlayer.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(deletedPlayerStatus.getBody()).isEqualTo("PLAYER WITH ID: " + player1.getPlayerId() + ", DELETED SUCCESSFULLY!");
+        assertThat(deletedPlayerStatus.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
 
@@ -255,12 +188,22 @@ public class PlayerServiceTests extends BaseData {
         Executable executable = () -> playerService.deletePlayer(player1.getPlayerId());
 
         //then
-        assertThrows(EntityNotFoundException.class, executable);
+        assertThrows(EntityDoesNotExistsException.class, executable);
     }
 
-    @Override
-    public void deleteRelatedTablesData() {
+    @DisplayName("Service Test for deleting All Players")
+    @Test
+    public void givenNothing_whenDeleteAll_thenDeleteAllForPlayerRepoIsCalledOnce(){
+        //given
+        willDoNothing().given(playerRepo).deleteAll();
 
+        //when
+        ResponseEntity<String> deletedPlayers = playerService.deleteAllPlayers();
+
+        //then
+        assertThat(deletedPlayers.getBody()).isEqualTo("ALL PLAYERS DELETED SUCCESSFULLY!");
+        assertThat(deletedPlayers.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(playerRepo, times(1)).deleteAll();
     }
 
     @Override
@@ -272,8 +215,5 @@ public class PlayerServiceTests extends BaseData {
         teamB.setTeamId(2L);
         teamA.setPlayers(new ArrayList<>());
         teamB.setPlayers(new ArrayList<>());
-
-//        player1.setTeams(new ArrayList<>());
-//        player2.setTeams(new ArrayList<>());
     }
 }

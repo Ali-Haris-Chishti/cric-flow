@@ -1,8 +1,8 @@
 package com.example.cricflow.service;
 
 import com.example.cricflow.BaseData;
-import com.example.cricflow.exception.EntityDoesNotExists;
-import com.example.cricflow.exception.GroundNameAlreadyExistsException;
+import com.example.cricflow.exception.EntityDoesNotExistsException;
+import com.example.cricflow.exception.NameAlreadyExistsException;
 import com.example.cricflow.model.Ground;
 import com.example.cricflow.repository.GroundRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,14 +44,13 @@ public class GroundServiceTests extends BaseData {
         //given
         given(groundRepo.findByGroundName(anyString()))
                 .willReturn(Optional.empty());
-        given(groundRepo.save(ground1))
-                .willReturn(ground1);
+        given(groundRepo.save(any(Ground.class))).willReturn(ground1);
 
         //when
-        ResponseEntity<Ground> savedGround = groundService.createGround(ground1);
+        ResponseEntity<Ground> savedGround = groundService.createGround("SCME Ground");
 
         //then
-        assertThat(savedGround.getBody()).isEqualTo(ground1);
+        assertThat(savedGround.getBody().getGroundName()).isEqualTo("SCME Ground");
         assertThat(savedGround.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
@@ -63,10 +62,10 @@ public class GroundServiceTests extends BaseData {
                 .willReturn(Optional.of(new Ground()));
 
         //when
-        Executable executable = () -> groundService.createGround(ground1);
+        Executable executable = () -> groundService.createGround("SCME Ground");
 
         //then
-        assertThrows(GroundNameAlreadyExistsException.class, executable);
+        assertThrows(NameAlreadyExistsException.class, executable);
     }
 
     @DisplayName("Service Test for reading a ground with id that exists")
@@ -97,13 +96,14 @@ public class GroundServiceTests extends BaseData {
         Executable executable = () -> groundService.readGround(ground1.getGroundId());
 
         //then
-        assertThrows(EntityDoesNotExists.class, executable);
+        assertThrows(EntityDoesNotExistsException.class, executable);
     }
 
     @DisplayName("Service Test for updating a ground already saved")
     @Test
     public void givenGroundAlreadySaved_whenUpdated_thenUpdatedGroundObjectIsReturned() {
         //given
+        ground1.setGroundName("NICE GROUND");
         given(groundRepo.findById(anyLong()))
                 .willReturn(Optional.of(new Ground()));
         given(groundRepo.save(ground1))
@@ -128,7 +128,7 @@ public class GroundServiceTests extends BaseData {
         Executable executable = () -> groundService.updateGround(ground1);
 
         //then
-        assertThrows(EntityDoesNotExists.class, executable);
+        assertThrows(EntityDoesNotExistsException.class, executable);
     }
 
     @DisplayName("Service Test for deleting a ground which exists in database")
@@ -140,11 +140,11 @@ public class GroundServiceTests extends BaseData {
         willDoNothing().given(groundRepo).delete(any(Ground.class));
 
         //when
-        ResponseEntity<Ground> savedGround = groundService.deleteGround(ground1);
+        ResponseEntity<?> deletionStatus = groundService.deleteGround(ground1.getGroundId());
 
         //then
-        assertThat(savedGround.getBody()).isEqualTo((Ground) null);
-        assertThat(savedGround.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(deletionStatus.getBody()).isEqualTo(("GROUND WITH ID: " + ground1.getGroundId() + ", DELETED SUCCESSFULLY!"));
+        assertThat(deletionStatus.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @DisplayName("Service Test for deleting a ground which does not exists")
@@ -155,10 +155,10 @@ public class GroundServiceTests extends BaseData {
                 .willReturn(Optional.empty());
 
         //when
-        Executable executable = () -> groundService.deleteGround(ground1);
+        Executable executable = () -> groundService.deleteGround(ground1.getGroundId());
 
         //then
-        assertThrows(EntityDoesNotExists.class, executable);
+        assertThrows(EntityDoesNotExistsException.class, executable);
     }
 
     @Override

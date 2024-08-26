@@ -1,13 +1,17 @@
 package com.example.cricflow.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.cricflow.model.literal.StringGenerator.generateObjectString;
 
@@ -27,15 +31,12 @@ public class Team {
     )
     private Long teamId;
 
-    @Column
+    @Column(unique = true)
+    @NotNull(message = "teamName can not be null")
+    @Size(min = 5, max = 30, message = "teamName must be 5-30 characters long")
     private String teamName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "team_player_relation",
-            joinColumns = @JoinColumn(referencedColumnName = "teamId", name = "team_id"),
-            inverseJoinColumns = @JoinColumn(referencedColumnName = "playerId", name = "player_id")
-    )
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "team")
     List<Player> players = new ArrayList<>();
 
     @Override

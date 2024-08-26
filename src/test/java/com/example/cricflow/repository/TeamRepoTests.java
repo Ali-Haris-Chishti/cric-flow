@@ -25,7 +25,6 @@ public class TeamRepoTests extends BaseData {
     public void setUp() {
         deleteRelatedTablesData();
         prepare();
-
     }
 
     @DisplayName("Repository Test for adding a team")
@@ -113,6 +112,22 @@ public class TeamRepoTests extends BaseData {
         assertThat(retrievedTeams.get(0).teamEquals(teams.get(0))).isTrue();
         assertThat(retrievedTeams.get(1).teamEquals(teams.get(1))).isTrue();
         assertThat(retrievedTeams.size()).isEqualTo(teams.size());
+    }
+
+    @DisplayName("Repository Test for checking find by name")
+    @Test
+    public void givenTeamName_whenFindByNameCalled_thenOptionOfTeamIsReturned(){
+        //given
+        List<Team> teams = List.of(teamA, teamB);
+        teamRepo.saveAll(teams);
+
+        //when
+        Optional<Team> teamWithExistingName = teamRepo.findByTeamName(teamA.getTeamName());
+        Optional<Team> teamWithOutExistingName = teamRepo.findByTeamName("");
+
+        //then
+        assertThat(teamWithExistingName).isPresent();
+        assertThat(teamWithOutExistingName).isNotPresent();
     }
 
     @Override

@@ -23,8 +23,8 @@ public abstract class BaseData {
     protected static Ball ball1, ball2, ball3, ball4;
     protected static BallEvent event1, event2, event3, event4;
 
-    public abstract void deleteRelatedTablesData();
-    public abstract void prepare();
+    public void deleteRelatedTablesData() {};
+    public void prepare() {};
 
     static {
 
@@ -39,24 +39,28 @@ public abstract class BaseData {
                 .firstName("Ali")
                 .lastName("Haris")
                 .battingStyle(Player.BattingStyle.RIGHT_HANDED)
+                .bowlingStyle(Player.BowlingStyle.RIGHT_ARM_LEG_SPINNER)
                 .playerType(Player.PlayerType.BATSMAN)
                 .build();
         player2 = Player.builder()
                 .firstName("Tauha")
                 .lastName("Kashif")
                 .battingStyle(Player.BattingStyle.RIGHT_HANDED)
+                .bowlingStyle(Player.BowlingStyle.RIGHT_ARM_FAST_BOWLER)
                 .playerType(Player.PlayerType.BOWLER)
                 .build();
         player3 = Player.builder()
                 .firstName("Ali")
                 .lastName("Hamza")
                 .battingStyle(Player.BattingStyle.LEFT_HANDED)
+                .bowlingStyle(Player.BowlingStyle.RIGHT_ARM_FAST_BOWLER)
                 .playerType(Player.PlayerType.ALL_ROUNDER)
                 .build();
         player4 = Player.builder()
                 .firstName("Abdul")
                 .lastName("Sami")
                 .battingStyle(Player.BattingStyle.RIGHT_HANDED)
+                .bowlingStyle(Player.BowlingStyle.RIGHT_ARM_LEG_SPINNER)
                 .playerType(Player.PlayerType.BATSMAN)
                 .build();
 

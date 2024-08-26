@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +18,8 @@ import java.util.Optional;
 @DataJpaTest
 public class PlayerRepoTests extends BaseData {
 
-    @Autowired
-    private PlayerRepo playerRepo;
+    @Autowired private PlayerRepo playerRepo;
+    @Autowired private TeamRepo teamRepo;
 
     @BeforeEach
     public void setUp() {
@@ -115,12 +116,35 @@ public class PlayerRepoTests extends BaseData {
         assertThat(retrievedPlayers.size()).isEqualTo(players.size());
     }
 
+    @DisplayName("Repository Test for getting all players currently not in any team")
+    @Test
+    public void givenNothing_whenFindAllByTeamCalledWithTeamNull_thenAllPlayersCurrentlyInNoTeamAreReturned(){
+        //given
+        teamA = teamRepo.save(teamA);
+        player1.setTeam(teamA);
+        playerRepo.saveAll(Arrays.asList(player1, player2, player3, player4));
+
+        //when
+        List<Player> players = playerRepo.findAllByTeam(null);
+        System.out.println(players);
+        //then
+        assertThat(players.size()).isEqualTo(3);
+        assertThat(players.get(0).playerEquals(player2)).isTrue();
+        assertThat(players.get(1).playerEquals(player3)).isTrue();
+        assertThat(players.get(2).playerEquals(player4)).isTrue();
+    }
+
     @Override
     public void deleteRelatedTablesData() {
         playerRepo.deleteAll();
+        teamRepo.deleteAll();
     }
 
     @Override
     public void prepare() {
+        player1.setTeam(null);
+        player2.setTeam(null);
+        player3.setTeam(null);
+        player4.setTeam(null);
     }
 }

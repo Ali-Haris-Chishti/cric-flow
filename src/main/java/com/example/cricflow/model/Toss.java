@@ -4,6 +4,7 @@ import com.example.cricflow.model.literal.ExcludedFromToString;
 import com.example.cricflow.model.literal.TeamSide;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,22 +34,19 @@ public class Toss {
     Match match;
 
     @Column
+    @NotNull(message = "winningSide can not be null")
     @Enumerated(EnumType.STRING)
     TeamSide winningSide;
 
     @Column
+    @NotNull(message = "battingSide can not be null")
     @Enumerated(EnumType.STRING)
     TeamSide battingSide;
 
     @Column
+    @NotNull(message = "bowlingSide can not be null")
     @Enumerated(EnumType.STRING)
     TeamSide bowlingSide;
-
-    @PreUpdate
-    @Transactional
-    void postPersist() {
-
-    }
 
     @Override
     public String toString() {
