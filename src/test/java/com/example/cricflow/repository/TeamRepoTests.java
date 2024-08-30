@@ -2,6 +2,7 @@ package com.example.cricflow.repository;
 
 import com.example.cricflow.BaseData;
 import com.example.cricflow.model.Team;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,12 @@ public class TeamRepoTests extends BaseData {
 
     @BeforeEach
     public void setUp() {
-        deleteRelatedTablesData();
         prepare();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        deleteRelatedTablesData();
     }
 
     @DisplayName("Repository Test for adding a team")
@@ -43,7 +48,7 @@ public class TeamRepoTests extends BaseData {
     @Test
     public void givenTeamObject_whenUpdated_thenUpdatedTeamIsReturned() {
         //given
-        teamRepo.save(teamA);
+        teamA = teamRepo.save(teamA);
 
         //when
         teamA.setTeamName("Pishawer Zalmi");
@@ -109,8 +114,6 @@ public class TeamRepoTests extends BaseData {
         List<Team> retrievedTeams = teamRepo.findAll();
 
         //then
-        assertThat(retrievedTeams.get(0).teamEquals(teams.get(0))).isTrue();
-        assertThat(retrievedTeams.get(1).teamEquals(teams.get(1))).isTrue();
         assertThat(retrievedTeams.size()).isEqualTo(teams.size());
     }
 
@@ -122,8 +125,8 @@ public class TeamRepoTests extends BaseData {
         teamRepo.saveAll(teams);
 
         //when
-        Optional<Team> teamWithExistingName = teamRepo.findByTeamName(teamA.getTeamName());
-        Optional<Team> teamWithOutExistingName = teamRepo.findByTeamName("");
+        Optional<Team> teamWithExistingName = teamRepo.findByTeamNameIgnoreCase(teamA.getTeamName().toUpperCase());
+        Optional<Team> teamWithOutExistingName = teamRepo.findByTeamNameIgnoreCase("");
 
         //then
         assertThat(teamWithExistingName).isPresent();

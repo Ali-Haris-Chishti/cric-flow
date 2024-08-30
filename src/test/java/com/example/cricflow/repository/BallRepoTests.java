@@ -2,6 +2,7 @@ package com.example.cricflow.repository;
 
 import com.example.cricflow.BaseData;
 import com.example.cricflow.model.Ball;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,12 @@ public class BallRepoTests extends BaseData {
 
     @BeforeEach
     public void setUp() {
-        deleteRelatedTablesData();
         prepare();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        deleteRelatedTablesData();
     }
 
     @DisplayName("Repository Test for adding a ball")
@@ -43,7 +48,7 @@ public class BallRepoTests extends BaseData {
     @Test
     public void givenBallObject_whenUpdated_thenUpdatedBallIsReturned() {
         //given
-        ballRepo.save(ball1);
+        ball1 = ballRepo.save(ball1);
 
         //when
         ball1.setStriker(player4);

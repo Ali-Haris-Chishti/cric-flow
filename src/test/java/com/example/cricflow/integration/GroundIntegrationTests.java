@@ -9,15 +9,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -228,6 +232,27 @@ public class GroundIntegrationTests {
         response.andDo(print())
                 .andExpect(status().isOk());
         assertThat(groundRepo.findAll().size()).isEqualTo(0);
+    }
+
+    @DisplayName("Controller Test for searching a ground")
+    @Test
+    public void givenCharacterSequence_whenSearchIsHit_thenListOfAllGroundsWithGivenSequenceInTheirNameAndOkStatusIsReturned() throws Exception{
+        //given
+        Ground ground1 = new Ground(null, "NICE GROUND");
+        Ground ground2 = new Ground(null, "SCME GROUND");
+        Ground ground3 = new Ground(null, "HBL GROUND");
+        groundRepo.saveAll(Arrays.asList(ground1, ground2, ground3));
+
+        //when
+        ResultActions response = mockMvc.perform(get("/api/v1/ground/search")
+                .param("seq", "e g")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].size()", is(2)));
     }
 
 }

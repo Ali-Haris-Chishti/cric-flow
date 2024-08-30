@@ -2,6 +2,7 @@ package com.example.cricflow.repository;
 
 import com.example.cricflow.BaseData;
 import com.example.cricflow.model.Inning;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,11 +22,16 @@ public class InningRepoTests extends BaseData {
     @Autowired PlayerRepo playerRepo;
     @Autowired OverRepo overRepo;
     @Autowired BallRepo ballRepo;
+    @Autowired EventRepo eventRepo;
 
     @BeforeEach
     void setUp() {
-        deleteRelatedTablesData();
         prepare();
+    }
+
+    @AfterEach
+    void tearDown() {
+        deleteRelatedTablesData();
     }
 
     @DisplayName("Repository Test for adding a inning")
@@ -44,7 +50,7 @@ public class InningRepoTests extends BaseData {
     @Test
     public void givenInningObject_whenUpdated_thenUpdatedInningIsReturned() {
         //given
-        inningRepo.save(inning1);
+        inning1 = inningRepo.save(inning1);
 
         //when
         inning1.setNumberOfOvers(20);
@@ -116,10 +122,12 @@ public class InningRepoTests extends BaseData {
 
     @Override
     public void deleteRelatedTablesData(){
-        inningRepo.deleteAll();
-        teamRepo.deleteAll();
+        ballRepo.deleteAll();
+        eventRepo.deleteAll();
         overRepo.deleteAll();
         playerRepo.deleteAll();
+        teamRepo.deleteAll();
+        inningRepo.deleteAll();
     }
 
     @Override
@@ -136,11 +144,17 @@ public class InningRepoTests extends BaseData {
         teamA = teamRepo.save(teamA);
         teamB = teamRepo.save(teamB);
 
+        // saving events, as they are needed in the ball
+        event1 = eventRepo.save(event1);
+        event2 = eventRepo.save(event2);
+        event3 = eventRepo.save(event3);
+        event4 = eventRepo.save(event4);
+
         // updating balls with players
-        ball1.setStriker(player1); ball1.setNonStriker(player2); ball1.setBowler(player3);
-        ball2.setStriker(player1); ball2.setNonStriker(player2); ball2.setBowler(player3);
-        ball3.setStriker(player1); ball3.setNonStriker(player2); ball3.setBowler(player3);
-        ball4.setStriker(player1); ball4.setNonStriker(player2); ball4.setBowler(player3);
+        ball1.setStriker(player1); ball1.setNonStriker(player2); ball1.setBowler(player3); ball1.setBallEvent(event1);
+        ball2.setStriker(player1); ball2.setNonStriker(player2); ball2.setBowler(player3); ball2.setBallEvent(event2);
+        ball3.setStriker(player1); ball3.setNonStriker(player2); ball3.setBowler(player3); ball3.setBallEvent(event3);
+        ball4.setStriker(player1); ball4.setNonStriker(player2); ball4.setBowler(player3); ball4.setBallEvent(event4);
         // saving balls now, as they do not depend on others
         ball1 = ballRepo.save(ball1);
         ball2 = ballRepo.save(ball2);

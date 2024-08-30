@@ -4,6 +4,7 @@ import com.example.cricflow.BaseData;
 import com.example.cricflow.model.BallEvent;
 import com.example.cricflow.model.event.Wicket;
 import com.example.cricflow.model.literal.WicketType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,14 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 public class EventRepoTests extends BaseData {
 
-    @Autowired private PlayerRepo playerRepo;
-    @Autowired private BallRepo ballRepo;
     @Autowired private EventRepo eventRepo;
 
     @BeforeEach
     public void setUp() {
-        deleteRelatedTablesData();
         prepare();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        deleteRelatedTablesData();
     }
 
     @DisplayName("Repository Test for adding a event")
@@ -45,7 +48,7 @@ public class EventRepoTests extends BaseData {
     @Test
     public void givenBallEventObject_whenUpdated_thenUpdatedBallEventIsReturned() {
         //given
-        eventRepo.save(event1);
+        event1 = eventRepo.save(event1);
 
         //when
         ((Wicket) event1).setWicketType(WicketType.RUN_OUT);
@@ -119,41 +122,10 @@ public class EventRepoTests extends BaseData {
     @Override
     public void deleteRelatedTablesData(){
         eventRepo.deleteAll();
-        playerRepo.deleteAll();
-        ballRepo.deleteAll();
     }
 
     @Override
     public void prepare() {
-        // saving players
-        player1 = playerRepo.save(player1);
-        player2 = playerRepo.save(player2);
-        player3 = playerRepo.save(player3);
-        player4 = playerRepo.save(player4);
 
-        // updating events with event events, and players
-        ball1.setStriker(player1);
-        ball1.setNonStriker(player2);
-        ball1.setBowler(player3);
-        ball2.setStriker(player2);
-        ball2.setNonStriker(player1);
-        ball2.setBowler(player3);
-        ball3.setStriker(player1);
-        ball3.setNonStriker(player3);
-        ball3.setBowler(player4);
-        ball4.setStriker(player1);
-        ball4.setNonStriker(player4);
-        ball4.setBowler(player2);
-        // saving the balls
-        ball1 = ballRepo.save(ball1);
-        ball2 = ballRepo.save(ball2);
-        ball3 = ballRepo.save(ball3);
-        ball4 = ballRepo.save(ball4);
-
-        // updating the events with balls
-        event1.setBall(ball1);
-        event2.setBall(ball2);
-        event3.setBall(ball3);
-        event4.setBall(ball4);
     }
 }

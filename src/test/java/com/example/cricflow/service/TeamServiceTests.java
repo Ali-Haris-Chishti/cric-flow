@@ -56,7 +56,7 @@ public class TeamServiceTests extends BaseData {
         //given
         String teamName = "Lahore Qalandars";
         Team expectedTeam = new Team(1L, teamName.toUpperCase(), null);
-        given(teamRepo.findByTeamName(anyString())).willReturn(Optional.empty());
+        given(teamRepo.findByTeamNameIgnoreCase(anyString())).willReturn(Optional.empty());
         given(teamRepo.save(any(Team.class))).willReturn(expectedTeam);
 
         //when
@@ -73,7 +73,7 @@ public class TeamServiceTests extends BaseData {
     public void givenNonUniqueTeamName_whenCreateTeamCalled_thenNameAlreadyExistsExceptionIsThrown(){
         //given
         String teamName = "Lahore Qalandars";
-        given(teamRepo.findByTeamName(anyString())).willReturn(Optional.of(new Team()));
+        given(teamRepo.findByTeamNameIgnoreCase(anyString())).willReturn(Optional.of(new Team()));
 
         //when
         Executable executable = () ->teamService.createTeam(teamName);
@@ -92,10 +92,11 @@ public class TeamServiceTests extends BaseData {
             long id = 0L;
             expectedTeams.add(new Team(++id, teamName.toUpperCase(), null));
         }
-        given(teamRepo.findByTeamName(anyString())).willReturn(Optional.empty());
-        given(teamRepo.save(new Team(null, teamNames.get(0).toUpperCase(), null))).willReturn(expectedTeams.get(0));
-        given(teamRepo.save(new Team(null, teamNames.get(1).toUpperCase(), null))).willReturn(expectedTeams.get(1));
-        given(teamRepo.save(new Team(null, teamNames.get(2).toUpperCase(), null))).willReturn(expectedTeams.get(2));
+        given(teamRepo.findByTeamNameIgnoreCase(anyString())).willReturn(Optional.empty());
+        Team team1 = new Team(null, teamNames.get(0).toUpperCase(), null);
+        Team team2 = new Team(null, teamNames.get(1).toUpperCase(), null);
+        Team team3 = new Team(null, teamNames.get(2).toUpperCase(), null);
+        given(teamRepo.saveAll(Arrays.asList(team1, team2, team3))).willReturn(expectedTeams);
 
         //when
         ResponseEntity<List<Team>> createdTeams = teamService.createMultipleTeams(teamNames);
@@ -267,6 +268,22 @@ public class TeamServiceTests extends BaseData {
 
         //then
         assertThrows(PlayerRemovalFromTeamException.class, executable);
+    }
+
+    @DisplayName("Service Test for searching teams with character sequence")
+    @Test
+    public void givenCharacterSequence_whenSearchIsCalled_thenListOfPlayersWithThatSequenceInTheirNameIsReturned(){
+        //given
+        given(teamRepo.findAllByFullNameContaining("lah"))
+                .willReturn(Collections.singletonList(teamA));
+
+        //when
+        ResponseEntity<List<Team>> searchedTeams = teamService.searchTeamsByName("lah");
+
+        //then
+        assertThat(searchedTeams.getBody().size()).isEqualTo(1);
+        assertThat(searchedTeams.getBody().get(0)).isEqualTo(teamA);
+        assertThat(searchedTeams.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Override

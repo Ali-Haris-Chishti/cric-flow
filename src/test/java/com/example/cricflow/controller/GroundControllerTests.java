@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -233,6 +234,23 @@ public class GroundControllerTests {
                 .willReturn(new ResponseEntity<>("ALL 3 GROUNDS DELETED SUCCESSFULLY!", HttpStatus.OK));
         //when
         ResultActions response = mockMvc.perform(delete("/api/v1/ground/delete/1")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Controller Test for searching a ground")
+    @Test
+    public void givenCharacterSequence_whenSearchIsHit_thenListOfAllGroundsWithGivenSequenceInTheirNameAndOkStatusIsReturned() throws Exception{
+        //given
+        given(groundService.searchGroundsByNameSequence("e g"))
+                .willReturn(new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK));
+        //when
+        ResultActions response = mockMvc.perform(get("/api/v1/ground/search")
+                        .param("seq", "e g")
                 .contentType(MediaType.APPLICATION_JSON)
         );
 

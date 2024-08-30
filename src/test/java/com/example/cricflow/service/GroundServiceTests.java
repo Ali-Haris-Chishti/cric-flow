@@ -16,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;
@@ -42,7 +45,7 @@ public class GroundServiceTests extends BaseData {
     @Test
     public void givenGroundObjectWithUniqueName_whenSaved_thenGroundObjectIsReturned() {
         //given
-        given(groundRepo.findByGroundName(anyString()))
+        given(groundRepo.findByGroundNameIgnoreCase(anyString()))
                 .willReturn(Optional.empty());
         given(groundRepo.save(any(Ground.class))).willReturn(ground1);
 
@@ -58,7 +61,7 @@ public class GroundServiceTests extends BaseData {
     @Test
     public void givenGroundObjectWithNonUniqueName_whenSaved_thenGroundNameAlreadyExistsExceptionIsThrown() {
         //given
-        given(groundRepo.findByGroundName(anyString()))
+        given(groundRepo.findByGroundNameIgnoreCase(anyString()))
                 .willReturn(Optional.of(new Ground()));
 
         //when
@@ -159,6 +162,22 @@ public class GroundServiceTests extends BaseData {
 
         //then
         assertThrows(EntityDoesNotExistsException.class, executable);
+    }
+
+    @DisplayName("Service Test for searching a ground")
+    @Test
+    public void givenCharacterSequence_whenSearched_thenListOfGroundsWithThatSequenceInTheirNamesIsReturned() {
+        //given
+        given(groundRepo.findAllByFullNameContaining("ice g"))
+                .willReturn(Collections.singletonList(ground1));
+
+        //when
+        ResponseEntity<List<Ground>> grounds = groundService.searchGroundsByNameSequence("ice g");
+
+        //then
+        assertThat(grounds.getBody().size()).isEqualTo(1);
+        assertThat(grounds.getBody().get(0).groundEquals(ground1)).isTrue();
+        assertThat(grounds.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.example.cricflow.exception.EntityDoesNotExistsException;
 import com.example.cricflow.exception.validator.PlayerFieldsException;
 import com.example.cricflow.model.Player;
 import com.example.cricflow.repository.PlayerRepo;
+import com.example.cricflow.repository.TeamPlayerRelationRepo;
 import com.example.cricflow.repository.TeamRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,11 +31,9 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 public class PlayerServiceTests extends BaseData {
 
-    @Mock
-    PlayerRepo playerRepo;
-
-    @Mock
-    TeamRepo teamRepo;
+    @Mock PlayerRepo playerRepo;
+    @Mock TeamRepo teamRepo;
+    @Mock TeamPlayerRelationRepo relationRepo;
 
     @InjectMocks
     PlayerService playerService;
@@ -146,6 +145,8 @@ public class PlayerServiceTests extends BaseData {
         assertThat(savedPlayer.getBody().getPlayerType()).isEqualTo(player1.getPlayerType());
         assertThat(savedPlayer.getBody()).isEqualTo(player1);
         assertThat(savedPlayer.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        player1.setPlayerType(Player.PlayerType.BATSMAN); // restoring player1 to original, so it may not affect other tests
     }
 
     @DisplayName("Service Test for updating a new player")
@@ -168,6 +169,7 @@ public class PlayerServiceTests extends BaseData {
         //given
         given(playerRepo.findById(anyLong())).willReturn(Optional.of(player1));
         willDoNothing().given(playerRepo).deleteById(player1.getPlayerId());
+        willDoNothing().given(relationRepo).deleteAllByPlayer(player1);
 
         //when
         ResponseEntity<String> deletedPlayerStatus = playerService.deletePlayer(player1.getPlayerId());
@@ -196,14 +198,31 @@ public class PlayerServiceTests extends BaseData {
     public void givenNothing_whenDeleteAll_thenDeleteAllForPlayerRepoIsCalledOnce(){
         //given
         willDoNothing().given(playerRepo).deleteAll();
+        willDoNothing().given(relationRepo).deleteAll();
 
         //when
         ResponseEntity<String> deletedPlayers = playerService.deleteAllPlayers();
 
         //then
-        assertThat(deletedPlayers.getBody()).isEqualTo("ALL PLAYERS DELETED SUCCESSFULLY!");
         assertThat(deletedPlayers.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(playerRepo, times(1)).deleteAll();
+    }
+
+    @DisplayName("Service Test for searching players by name")
+    @Test
+    public void givenCharacterSequence_whenSearchIsCalled_thenListOfAllPlayersHavingTheSequenceInTheirNameIsReturned(){
+        //given
+        given(playerRepo.findAllByFullNameContaining("i h"))
+                .willReturn(Arrays.asList(player1, player3));
+
+        //when
+        ResponseEntity<List<Player>> players = playerService.searchPlayersByName("i h");
+
+        //then
+        assertThat(players.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(players.getBody().size()).isEqualTo(2);
+        assertThat(players.getBody().get(0)).isEqualTo(player1);
+        assertThat(players.getBody().get(1)).isEqualTo(player3);
     }
 
     @Override

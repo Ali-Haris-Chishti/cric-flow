@@ -2,6 +2,7 @@ package com.example.cricflow.repository;
 
 import com.example.cricflow.BaseData;
 import com.example.cricflow.model.Over;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +26,12 @@ public class OverRepoTests extends BaseData {
 
     @BeforeEach
     public void setUp() {
-        deleteRelatedTablesData();
         prepare();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        deleteRelatedTablesData();
     }
 
     @DisplayName("Repository Test for adding a over")
@@ -46,7 +51,7 @@ public class OverRepoTests extends BaseData {
     @Test
     public void givenOverObject_whenUpdated_thenUpdatedOverIsReturned() {
         //given
-        overRepo.save(over1);
+        over1 = overRepo.save(over1);
 
         //when
         over1.setBalls(new ArrayList<>());
