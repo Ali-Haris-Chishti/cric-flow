@@ -1,5 +1,6 @@
 package com.example.cricflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,9 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.cricflow.model.literal.StringGenerator.generateObjectString;
 
@@ -36,7 +35,8 @@ public class Team {
     @Size(min = 5, max = 30, message = "teamName must be 5-30 characters long")
     private String teamName;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "team")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team")
+    @JsonIgnore
     List<Player> players = new ArrayList<>();
 
     @Override
@@ -61,6 +61,4 @@ public class Team {
 
         return teamName.equals(other.teamName);
     }
-
-
 }

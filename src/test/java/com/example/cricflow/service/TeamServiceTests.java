@@ -1,13 +1,11 @@
 package com.example.cricflow.service;
 
 import com.example.cricflow.BaseData;
-import com.example.cricflow.exception.DuplicatePlayerInTeamException;
-import com.example.cricflow.exception.EntityDoesNotExistsException;
-import com.example.cricflow.exception.NameAlreadyExistsException;
-import com.example.cricflow.exception.PlayerRemovalFromTeamException;
-import com.example.cricflow.model.Player;
+import com.example.cricflow.exception.team.DuplicatePlayerInTeamException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.NameAlreadyExistsException;
+import com.example.cricflow.exception.team.PlayerRemovalFromTeamException;
 import com.example.cricflow.model.Team;
-import com.example.cricflow.model.TeamPlayerRelation;
 import com.example.cricflow.repository.PlayerRepo;
 import com.example.cricflow.repository.TeamPlayerRelationRepo;
 import com.example.cricflow.repository.TeamRepo;
@@ -218,12 +216,12 @@ public class TeamServiceTests extends BaseData {
     public void givenListOfPlayersAllExistingInTheTeam_whenRemovedToATeam_thenUpdatedTeamAfterRemovingPlayersIsReturned(){
         //given
         teamA.setPlayers(Arrays.asList(player1, player2, player3));
+        player1.setTeam(teamA); player2.setTeam(teamA); player3.setTeam(teamA);
         List<Long> playersToBeRemoved = Arrays.asList(player1.getPlayerId(), player3.getPlayerId());
         given(teamRepo.findById(teamA.getTeamId())).willReturn(Optional.of(teamA));
         // considering 1st player exists in DB, 2nd does not
         given(playerRepo.findById(player1.getPlayerId())).willReturn(Optional.of(player1));
         given(playerRepo.findById(player3.getPlayerId())).willReturn(Optional.of(player3));
-        given(relationRepo.findTopByTeamAndPlayerOrderByStartDateDesc(any(Team.class), any(Player.class))).willReturn(new TeamPlayerRelation());
 
         //when
         ResponseEntity<Team> teamAfterRemovingPlayers =  teamService.removeMultiplePlayersFromTeam(1L, playersToBeRemoved);

@@ -151,10 +151,10 @@ public class InningRepoTests extends BaseData {
         event4 = eventRepo.save(event4);
 
         // updating balls with players
-        ball1.setStriker(player1); ball1.setNonStriker(player2); ball1.setBowler(player3); ball1.setBallEvent(event1);
-        ball2.setStriker(player1); ball2.setNonStriker(player2); ball2.setBowler(player3); ball2.setBallEvent(event2);
-        ball3.setStriker(player1); ball3.setNonStriker(player2); ball3.setBowler(player3); ball3.setBallEvent(event3);
-        ball4.setStriker(player1); ball4.setNonStriker(player2); ball4.setBowler(player3); ball4.setBallEvent(event4);
+        ball1.setStriker(player1); ball1.setNonStriker(player2); ball1.setBallEvent(event1);
+        ball2.setStriker(player1); ball2.setNonStriker(player2); ball2.setBallEvent(event2);
+        ball3.setStriker(player1); ball3.setNonStriker(player2); ball3.setBallEvent(event3);
+        ball4.setStriker(player1); ball4.setNonStriker(player2); ball4.setBallEvent(event4);
         // saving balls now, as they do not depend on others
         ball1 = ballRepo.save(ball1);
         ball2 = ballRepo.save(ball2);

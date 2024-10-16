@@ -1,4 +1,4 @@
-package com.example.cricflow.exception;
+package com.example.cricflow.exception.team;
 
 public class PlayerRemovalFromTeamException extends RuntimeException {
     public PlayerRemovalFromTeamException(Long teamId, Long PlayerId) {

@@ -1,7 +1,7 @@
 package com.example.cricflow.controller;
 
-import com.example.cricflow.exception.EntityDoesNotExistsException;
-import com.example.cricflow.exception.NameAlreadyExistsException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.NameAlreadyExistsException;
 import com.example.cricflow.exception.validator.GroundFieldsException;
 import com.example.cricflow.model.Ground;
 import com.example.cricflow.service.GroundService;

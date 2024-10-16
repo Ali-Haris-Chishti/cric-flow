@@ -1,6 +1,5 @@
 package com.example.cricflow.model;
 
-import com.example.cricflow.model.literal.ExcludedFromToString;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,10 +36,6 @@ public class Ball {
     @JoinColumn(name = "non_striker_id")
     Player nonStriker;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "bowler_id")
-    Player bowler;
-
     @Override
     public String toString() {
         return generateObjectString(this);
@@ -55,7 +50,6 @@ public class Ball {
         return
                 striker.playerEquals(other.striker)
                         && nonStriker.playerEquals(other.nonStriker)
-                        && bowler.playerEquals(other.bowler)
                         && ballEvent.eventEquals(other.ballEvent);
     }
 }

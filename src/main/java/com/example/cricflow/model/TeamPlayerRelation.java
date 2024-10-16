@@ -34,15 +34,5 @@ public class TeamPlayerRelation {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    // Constructors, getters, setters, etc.
-
-//    @Embeddable
-//    @NoArgsConstructor
-//    @AllArgsConstructor
-//    public static class TeamPlayerId implements java.io.Serializable {
-//        private Long teamId;
-//        private Long playerId;
-//    }
-
 }
 

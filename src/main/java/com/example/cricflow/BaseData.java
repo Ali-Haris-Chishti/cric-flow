@@ -27,7 +27,6 @@ public abstract class BaseData {
     public void prepare() {};
 
     static {
-
         ground1 = Ground.builder()
                 .groundName("SCME Ground")
                 .build();
@@ -60,7 +59,7 @@ public abstract class BaseData {
                 .firstName("Abdul")
                 .lastName("Sami")
                 .battingStyle(Player.BattingStyle.RIGHT_HANDED)
-                .bowlingStyle(Player.BowlingStyle.RIGHT_ARM_LEG_SPINNER)
+                .bowlingStyle(Player.BowlingStyle.RIGHT_ARM_OFF_SPINNER)
                 .playerType(Player.PlayerType.BATSMAN)
                 .build();
 

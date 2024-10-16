@@ -1,7 +1,7 @@
 package com.example.cricflow.service;
 
-import com.example.cricflow.exception.EntityDoesNotExistsException;
-import com.example.cricflow.exception.NameAlreadyExistsException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.NameAlreadyExistsException;
 import com.example.cricflow.exception.validator.GroundFieldsException;
 import com.example.cricflow.model.Ground;
 import com.example.cricflow.repository.GroundRepo;
@@ -24,7 +24,7 @@ public class GroundService {
     private final GroundRepo groundRepo;
     private final Validator validator;
     
-    private final String referencedClass = "GROUND";
+    public final static String referencedClass = "GROUND";
     
     public GroundService(GroundRepo groundRepo) {
         this.groundRepo = groundRepo;
@@ -79,7 +79,7 @@ public class GroundService {
     }
 
     private void checkIfGroundNameAlreadyExists(String groundName) throws NameAlreadyExistsException {
-        if (groundRepo.findByGroundName(groundName.toUpperCase()).isPresent()) {
+        if (groundRepo.findByGroundNameIgnoreCase(groundName).isPresent()) {
             throw new NameAlreadyExistsException(referencedClass, groundName.toUpperCase());
         }
     }
@@ -115,5 +115,10 @@ public class GroundService {
                 }
             }
         }
+    }
+
+    public ResponseEntity<List<Ground>> searchGroundsByNameSequence(String seq) {
+        List<Ground> grounds = groundRepo.findAllByFullNameContaining(seq);
+        return new ResponseEntity<>(grounds, HttpStatus.OK);
     }
 }

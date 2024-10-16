@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BallRepo extends JpaRepository<Ball, Long> {
+    Ball findTopByOrderByBallIdDesc();
 }

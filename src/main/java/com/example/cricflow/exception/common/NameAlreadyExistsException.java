@@ -1,4 +1,4 @@
-package com.example.cricflow.exception;
+package com.example.cricflow.exception.common;
 
 public class NameAlreadyExistsException extends RuntimeException {
     public NameAlreadyExistsException(String object, String name) {

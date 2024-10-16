@@ -1,4 +1,4 @@
-package com.example.cricflow.exception;
+package com.example.cricflow.exception.team;
 
 public class DuplicatePlayerInTeamException extends RuntimeException {
     public DuplicatePlayerInTeamException(Long playerId, Long ParentId) {

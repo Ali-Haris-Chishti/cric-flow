@@ -2,6 +2,7 @@ package com.example.cricflow.model;
 
 import com.example.cricflow.model.literal.ExcludedFromToString;
 import com.example.cricflow.model.literal.TeamSide;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -28,9 +29,10 @@ public class Toss {
     )
     private Long tossId;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "match_id")
     @ExcludedFromToString
+    @JsonIgnore
     Match match;
 
     @Column

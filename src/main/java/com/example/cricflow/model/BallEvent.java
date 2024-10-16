@@ -1,6 +1,12 @@
 package com.example.cricflow.model;
 
+import com.example.cricflow.model.event.Extra;
+import com.example.cricflow.model.event.Score;
+import com.example.cricflow.model.event.Wicket;
 import com.example.cricflow.model.literal.ExcludedFromToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +15,16 @@ import lombok.experimental.SuperBuilder;
 
 import static com.example.cricflow.model.literal.StringGenerator.generateObjectString;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Extra.class, name = "extra"),
+        @JsonSubTypes.Type(value = Score.class, name = "score"),
+        @JsonSubTypes.Type(value = Wicket.class, name = "wicket")
+})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,11 +42,6 @@ public class BallEvent {
     )
     private long eventId;
 
-    @OneToOne
-    @JoinColumn(name = "ball_id")
-    @ExcludedFromToString
-    private Ball ball;
-
     @Override
     public String toString() {
         return generateObjectString(this);
@@ -41,7 +52,6 @@ public class BallEvent {
         if (other == null) return false;
 
         System.out.println(this);
-
-        return ball.getBallId() == other.ball.getBallId();
+        return true;
     }
 }

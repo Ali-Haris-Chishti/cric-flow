@@ -26,7 +26,11 @@ public class Over {
     )
     private Long overId;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bowler_id")
+    private Player bowler;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "over_balls_relation",
             joinColumns = @JoinColumn(referencedColumnName = "overId", name = "over_id"),
@@ -53,6 +57,6 @@ public class Over {
 
         System.out.println(this);
 
-        return true;
+        return bowler.playerEquals(other.bowler);
     }
 }

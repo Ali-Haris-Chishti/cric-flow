@@ -1,6 +1,6 @@
 package com.example.cricflow.controller;
 
-import com.example.cricflow.exception.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
 import com.example.cricflow.exception.validator.PlayerFieldsException;
 import com.example.cricflow.model.Player;
 import com.example.cricflow.service.PlayerService;
@@ -35,7 +35,6 @@ public class PlayerController {
     @PostMapping("/create-all")
     ResponseEntity<?> createMultiplePlayer(@RequestBody List<Player> players) {
         try {
-            System.out.println(players);
             return playerService.createMultiplePlayers(players);
         }
         catch (PlayerFieldsException e){
@@ -55,16 +54,12 @@ public class PlayerController {
 
     @GetMapping("/get-all")
     ResponseEntity<?> getAllPlayers(
-            @RequestParam(required = false) Long teamId
-    ) {
-        try {
-            if (teamId != null)
-                return playerService.findAllByTeam(teamId);
-        }
-        catch (EntityDoesNotExistsException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-        return playerService.readAllPlayers();
+            @RequestParam(required = false) Player.PlayerType playerType,
+            @RequestParam(required = false) Player.BattingStyle battingStyle,
+            @RequestParam(required = false) Player.BowlingStyle bowlingStyle
+    )
+    {
+        return playerService.findFilteredPlayers(playerType, battingStyle, bowlingStyle);
     }
 
     @PutMapping("/update")
@@ -93,6 +88,11 @@ public class PlayerController {
     @DeleteMapping("/delete-all")
     ResponseEntity<?> deleteAllPlayers(){
         return playerService.deleteAllPlayers();
+    }
+
+    @GetMapping("/search")
+    ResponseEntity<?> searchPlayerByName(@RequestParam String seq){
+        return playerService.searchPlayersByName(seq);
     }
 
     @GetMapping("/get-record/{id}")

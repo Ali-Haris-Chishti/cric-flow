@@ -1,8 +1,8 @@
 package com.example.cricflow.controller;
 
 import com.example.cricflow.BaseData;
-import com.example.cricflow.exception.EntityDoesNotExistsException;
-import com.example.cricflow.exception.NameAlreadyExistsException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.NameAlreadyExistsException;
 import com.example.cricflow.model.Team;
 import com.example.cricflow.service.TeamService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,9 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
@@ -245,6 +243,63 @@ public class TeamControllerTests extends BaseData {
         //then
         response.andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("Controller Test for adding players to team")
+    @Test
+    public void givenTeamIdAndListOfPlayerIds_whenAddPlayersToTeamIsHit_thenPlayersAreAddedToTeamAndUpdatedTeamAndOkStatusIsReturned() throws Exception {
+        //given
+        given(teamService.addMultiplePlayersToTeam(1L, Arrays.asList(1L, 2L, 3L)))
+                .willReturn(new ResponseEntity<>(new Team(), HttpStatus.OK));
+
+        //when
+        ResultActions response = mockMvc.perform(put("/api/v1/team/add-players")
+                        .param("teamId", "1")
+                        .content(objectMapper.writeValueAsString(Arrays.asList(1L, 2L, 3L)))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Controller Test for removing players from a team")
+    @Test
+    public void givenTeamIdAndListOfPlayerIds_whenRemovePlayersFromTeamIsHit_thenPlayersAreRemovedFromTeamAndUpdatedTeamAndOkStatusIsReturned() throws Exception {
+        //given
+        given(teamService.addMultiplePlayersToTeam(1L, Arrays.asList(1L, 2L, 3L)))
+                .willReturn(new ResponseEntity<>(new Team(), HttpStatus.OK));
+
+        //when
+        ResultActions response = mockMvc.perform(put("/api/v1/team/remove-players")
+                .param("teamId", "1")
+                .content(objectMapper.writeValueAsString(Arrays.asList(1L, 2L, 3L)))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Controller Test for searching teams by name")
+    @Test
+    public void givenCharacterSequence_whenSearchIsHit_thenListOfPlayerWithThatSequenceInTheirNameAndOkStatusIsReturned() throws Exception {
+        //given
+        given(teamService.searchTeamsByName("abc"))
+                .willReturn(new ResponseEntity<>(Arrays.asList(new Team(), new Team()), HttpStatus.OK));
+
+        //when
+        ResultActions response = mockMvc.perform(get("/api/v1/team/search")
+                .param("seq", "abc")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(2)));
     }
 
     @Override

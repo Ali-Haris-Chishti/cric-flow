@@ -145,18 +145,14 @@ public class BallRepoTests extends BaseData {
         ball1.setBallEvent(event1);
         ball1.setStriker(player1);
         ball1.setNonStriker(player2);
-        ball1.setBowler(player3);
         ball2.setBallEvent(event2);
         ball2.setStriker(player2);
         ball2.setNonStriker(player1);
-        ball2.setBowler(player3);
         ball3.setBallEvent(event3);
         ball3.setStriker(player1);
         ball3.setNonStriker(player3);
-        ball3.setBowler(player4);
         ball4.setBallEvent(event4);
         ball4.setStriker(player1);
         ball4.setNonStriker(player4);
-        ball4.setBowler(player2);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.cricflow.controller;
 
 import com.example.cricflow.BaseData;
-import com.example.cricflow.exception.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
 import com.example.cricflow.exception.validator.PlayerFieldsException;
 import com.example.cricflow.model.Player;
 import com.example.cricflow.service.PlayerService;

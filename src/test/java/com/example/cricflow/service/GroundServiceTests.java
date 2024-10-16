@@ -1,8 +1,8 @@
 package com.example.cricflow.service;
 
 import com.example.cricflow.BaseData;
-import com.example.cricflow.exception.EntityDoesNotExistsException;
-import com.example.cricflow.exception.NameAlreadyExistsException;
+import com.example.cricflow.exception.common.EntityDoesNotExistsException;
+import com.example.cricflow.exception.common.NameAlreadyExistsException;
 import com.example.cricflow.model.Ground;
 import com.example.cricflow.repository.GroundRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

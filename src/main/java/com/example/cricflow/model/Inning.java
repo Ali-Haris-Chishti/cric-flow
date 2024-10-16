@@ -39,9 +39,20 @@ public class Inning {
 
     @OneToMany(
             targetEntity = Over.class,
-            fetch = FetchType.EAGER
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
     )
     List<Over> overs;
+
+    @Enumerated(EnumType.STRING)
+    InningStatus inningStatus = InningStatus.YET_TO_START;
+
+
+    public static enum InningStatus {
+        YET_TO_START,
+        STARTED,
+        FINISHED
+    }
 
 
     @Override
